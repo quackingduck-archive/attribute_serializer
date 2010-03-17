@@ -1,5 +1,5 @@
 require 'riot'
-require 'attribute_serializer'
+require 'lib/attribute_serializer'
 
 def OHash &blk
   ActiveSupport::OrderedHash.new.tap(&blk)

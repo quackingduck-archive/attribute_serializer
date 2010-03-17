@@ -9,6 +9,7 @@ begin
     gs.email    = "myles@myles.id.au"
     gs.authors  = ["Myles Byrne"]
     gs.add_development_dependency('riot', '>= 0.10.13')
+    gs.files.include %(lib/attribute_serializer.rb) # jewler used to include files in lib automatically, what happened?
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
