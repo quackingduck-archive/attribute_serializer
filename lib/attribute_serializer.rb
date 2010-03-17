@@ -39,8 +39,8 @@ module AttributeSerializer
   end
 
   def generate(context_name, object)
-    if object.is_a?(Array)
-      object.map { |o| generate_single(o.class, context_name, o) }
+    if object.respond_to? :collect
+      object.collect { |o| generate_single(o.class, context_name, o) }
     else
       generate_single(object.class, context_name, object)
     end
