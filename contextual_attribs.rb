@@ -3,10 +3,10 @@ require 'active_support/ordered_hash'
 
 module Formatabator
   
-  class ContextSet
+  class Context
         
-    def initialize(klass, contexts, &delegate_methods)
-      @contexts = contexts
+    def initialize(klass, attribs, &delegate_methods)
+      @attribs = attribs
       @delegate_class = DelegateClass(klass)
       @delegate_class.class_eval do
         def formatee; __getobj__ end
@@ -15,10 +15,10 @@ module Formatabator
       @delegate_class.class_eval(&delegate_methods) if delegate_methods
     end
         
-    def generate(context_name, object)
+    def generate(object)
       @delegate = @delegate_class.new(object)
       ActiveSupport::OrderedHash.new.tap do |h|
-        @contexts[context_name].each do |attrib|
+        @attribs.each do |attrib|
           h[attrib.to_s] = @delegate.send(attrib) 
         end
       end
@@ -28,12 +28,13 @@ module Formatabator
   
   extend self
   
-  def context_sets
-    @context_sets ||= {}
+  def contexts
+    @contexts ||= {}
   end
   
-  def add_context_set(klass, contexts, &delegate_methods)
-    context_sets[klass] = ContextSet.new klass, contexts, &delegate_methods
+  def add_context_set(klass, context_name, attribs, &delegate_methods)
+    key = [klass, context_name] 
+    contexts[key] = Context.new klass, attribs, &delegate_methods
   end
   
   def generate(context_name, object)
@@ -45,18 +46,19 @@ module Formatabator
   end
   
   def generate_single(klass, context_name, object)
-    raise ArgumentError, "no contextual attributes setup for #{klass}" unless @context_sets.keys.include?(klass)
-    context_sets[klass].generate(context_name,object)
+    key = [klass, context_name] 
+    raise ArgumentError, "no contextual attributes setup for #{klass}:#{context_name}" unless contexts.keys.include?(key)
+    contexts[key].generate(object)
   end
   
 end
 
 # A user interface. Parses a number of intuitive argument options
-def Formatabator(arg1, arg2 = nil, &blk)
-  if arg1.is_a?(Class)
-    raise ArgumentError, "the second arg must be a hash of contexts and their attributes" unless arg2.is_a?(Hash)
-    Formatabator.add_context_set(arg1,arg2,&blk)
+def Formatabator(*args, &blk)
+  if args.first.is_a?(Class)
+    klass, context_name, attribs = (args.size == 3) ? args : [args[0], :default, args[1]]
+    Formatabator.add_context_set klass, context_name, attribs, &blk
   else
-    Formatabator.generate(arg2 || :default, arg1)
+    Formatabator.generate(args[1] || :default, args[0])
   end
 end
