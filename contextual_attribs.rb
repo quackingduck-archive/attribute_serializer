@@ -2,7 +2,7 @@ require 'delegate'
 require 'active_support/ordered_hash'
 
 # Implementation
-module Formatabator
+module AttributeSerializer
 
   extend self # check it out, singleton
 
@@ -58,7 +58,7 @@ end
 #
 # A default formatter:
 #
-#   Formatabator BlogPost, %w(id created_at title body) do
+#   AttributeSerializer BlogPost, %w(id created_at title body) do
 #     def body
 #       Rdiscount.new(formateee.body).to_html
 #     end
@@ -66,21 +66,21 @@ end
 #
 # Then call with:
 #
-#   Formatabator @post
+#   AttributeSerializer @post
 #
 # You can also define other formatters
 #  
-#   Formatabator BlogPost, :summary, %w(id created_at title)
+#   AttributeSerializer BlogPost, :summary, %w(id created_at title)
 #
-# And you Formatabator can produce formatted collections:
+# And you AttributeSerializer can produce formatted collections:
 #
-#   Formatabator @posts, :summary
+#   AttributeSerializer @posts, :summary
 #
-def Formatabator(*args, &blk)
+def AttributeSerializer(*args, &blk)
   if args.first.is_a?(Class)
     klass, context_name, attribs = (args.size == 3) ? args : [args[0], :default, args[1]]
-    Formatabator.add_context_set klass, context_name, attribs, &blk
+    AttributeSerializer.add_context_set klass, context_name, attribs, &blk
   else
-    Formatabator.generate(args[1] || :default, args[0])
+    AttributeSerializer.generate(args[1] || :default, args[0])
   end
 end
