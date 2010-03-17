@@ -56,7 +56,7 @@ module AttributeSerializer
   def context_for(klass, context_name)
     closest_context_match = contexts.keys.select do |c,n|
       klass.ancestors.include?(c) && context_name == n
-    end.min_by { |(c, _)| klass.ancestors.index(c) }
+    end.min_by { |c, _| klass.ancestors.index(c) }
 
     contexts[closest_context_match]
   end
