@@ -19,6 +19,10 @@ class BlogPost
   attr_accessor :id, :title, :body, :author
 end
 
+class PhotoBlogPost < BlogPost
+  attr_accessor :photo_url
+end
+
 context "Formatable object, default formator" do
   setup do
     AttributeSerializer BlogPost, %w(id title body)
@@ -31,12 +35,50 @@ context "Formatable object, default formator" do
   end
 
   asserts('produces the correct hash') do
-    AttributeSerializer topic # equivanlent to AttributeSerializer(topic,:default)
+    AttributeSerializer topic # equivalent to AttributeSerializer(topic,:default)
   end.equals(OHash { |h|
     h['id']    = 1
     h['title'] = "Contextual Attributes"
     h['body']  = "The layer you've always wanted for generating your json"
   })
+end
+
+context "Formatable subclass object, default formator" do
+  setup do
+    AttributeSerializer BlogPost, %w(id title body)
+
+    @post = PhotoBlogPost.create(
+      :id        => 1,
+      :title     => "Contextual Attributes",
+      :body      => "The layer you've always wanted for generating your json",
+      :photo_url => "http://foobar.com/lemonparty.jpg"
+    )
+  end
+
+  asserts('produces the correct hash') do
+    AttributeSerializer topic # equivalent to AttributeSerializer(topic,:default)
+  end.equals(OHash { |h|
+    h['id']    = 1
+    h['title'] = "Contextual Attributes"
+    h['body']  = "The layer you've always wanted for generating your json"
+  })
+
+  context "with subclass serializer" do
+    setup do
+      AttributeSerializer PhotoBlogPost, %w(id title body photo_url)
+      @post
+    end
+
+    asserts('produces the correct hash') do
+      AttributeSerializer topic # equivalent to AttributeSerializer(topic,:default)
+    end.equals(OHash { |h|
+      h['id']        = 1
+      h['title']     = "Contextual Attributes"
+      h['body']      = "The layer you've always wanted for generating your json"
+      h['photo_url'] = "http://foobar.com/lemonparty.jpg"
+    })
+  end
+
 end
 
 context "Nested formatable attrib" do

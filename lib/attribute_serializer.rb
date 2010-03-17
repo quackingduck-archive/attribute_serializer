@@ -47,9 +47,17 @@ module AttributeSerializer
   end
 
   def generate_single(klass, context_name, object)
-    key = [klass, context_name]
-    raise ArgumentError, "no contextual attributes setup for #{klass}:#{context_name}" unless contexts.keys.include?(key)
-    contexts[key].generate(object)
+    context = context_for([klass, context_name])
+    raise ArgumentError, "no contextual attributes setup for #{klass}:#{context_name}" unless context
+    context.generate(object)
+  end
+
+  def context_for(key)
+    closest_context_match = contexts.keys.select do |klass,context_name|
+      key.first.ancestors.include?(klass) && key.last == context_name
+    end.min_by { |(klass, _)| key.first.ancestors.index(klass) }
+
+    contexts[closest_context_match]
   end
 
 end
@@ -69,7 +77,7 @@ end
 #   AttributeSerializer @post
 #
 # You can also define other formatters
-#  
+#
 #   AttributeSerializer BlogPost, :summary, %w(id created_at title)
 #
 # And you AttributeSerializer can produce formatted collections:
