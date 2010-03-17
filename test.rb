@@ -22,14 +22,14 @@ end
 context "Formatable object, default formator" do
   setup do
     Formatabator BlogPost, %w(id title body)
-    
+
     BlogPost.create(
       :id    => 1,
       :title => "Contextual Attributes",
       :body  => "The layer you've always wanted for generating your json"
     )
   end
-  
+
   asserts('produces the correct hash') do
     Formatabator topic # equivanlent to Formatabator(topic,:default)
   end.equals(OHash { |h|
@@ -42,14 +42,14 @@ end
 context "Nested formatable attrib" do
   setup do
     Formatabator Author, %w(name email)
-    
+
     Formatabator BlogPost, %w(id author) do
       # no implicit support for nesting, intentionally
       def author
         Formatabator formatee.author
       end
     end
-    
+
     BlogPost.create(
       :id     => 1,
       :author => Author.create(
@@ -58,7 +58,7 @@ context "Nested formatable attrib" do
       )
     )
   end
-  
+
   asserts('produces the correct hash') { Formatabator(topic, :default) }.
   equals(OHash { |h|
     h['id']     = 1
@@ -66,8 +66,8 @@ context "Nested formatable attrib" do
       h['name']  = "Myles"
       h['email'] = "myles@"
     end
-  })                                                                         
-end  
+  })
+end
 
 context "Array of formatable objects" do
   setup do
@@ -75,7 +75,7 @@ context "Array of formatable objects" do
     [ Author.create(:name => "Myles",   :email => 'myles@'),
       Author.create(:name => "Gabriel", :email => 'gabriel@') ]
   end
-  
+
   asserts('produces the correct hash') { Formatabator(topic, :default) }.
   equals([
     OHash { |h| h['name'] = "Myles" ;   h['email'] = 'myles@' },
@@ -92,7 +92,7 @@ context "A non-default formatter" do
       :body  => "The layer you've always wanted for generating your json"
     )
   end
-  
+
   asserts('produces the correct hash') { Formatabator(topic, :summary) }.
   equals(
     OHash { |h| h['id'] = 1; h['title'] = "Contextual Attributes" }
