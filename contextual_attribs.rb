@@ -1,6 +1,7 @@
 require 'delegate'
 require 'active_support/ordered_hash'
 
+# Implementation
 module Formatabator
 
   extend self # check it out, singleton
@@ -53,7 +54,28 @@ module Formatabator
 
 end
 
-# A user interface. Parses a number of intuitive argument options
+# The interface
+#
+# A default formatter:
+#
+#   Formatabator BlogPost, %w(id created_at title body) do
+#     def body
+#       Rdiscount.new(formateee.body).to_html
+#     end
+#   end
+#
+# Then call with:
+#
+#   Formatabator @post
+#
+# You can also define other formatters
+#  
+#   Formatabator BlogPost, :summary, %w(id created_at title)
+#
+# And you Formatabator can produce formatted collections:
+#
+#   Formatabator @posts, :summary
+#
 def Formatabator(*args, &blk)
   if args.first.is_a?(Class)
     klass, context_name, attribs = (args.size == 3) ? args : [args[0], :default, args[1]]
