@@ -12,8 +12,9 @@ module AttributeSerializer
       @attribs = attribs
       @delegate_class = DelegateClass(klass)
       @delegate_class.class_eval do
-        def formatee; __getobj__ end
+        def delegatee; __getobj__ end        
         def id; formatee.id end # DelegateClass was written before object_id became the new world order
+        alias_method :formatee, :delegatee # this was a stupid name
       end
       @delegate_class.class_eval(&delegate_methods) if delegate_methods
     end
