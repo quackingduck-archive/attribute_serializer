@@ -1,5 +1,5 @@
 require 'riot'
-require 'contextual_attribs'
+require 'attribute_serializer'
 
 def OHash &blk
   ActiveSupport::OrderedHash.new.tap(&blk)
@@ -78,8 +78,8 @@ context "Array of formatable objects" do
 
   asserts('produces the correct hash') { AttributeSerializer(topic, :default) }.
   equals([
-    OHash { |h| h['name'] = "Myles" ;   h['email'] = 'myles@' },
-    OHash { |h| h['name'] = "Gabriel" ; h['email'] = 'gabriel@' }
+    OHash { |h| h['name'] = "Myles";   h['email'] = 'myles@' },
+    OHash { |h| h['name'] = "Gabriel"; h['email'] = 'gabriel@' }
   ])
 end
 
