@@ -40,6 +40,7 @@ module AttributeSerializer
   end
 
   def generate(context_name, object)
+    return object if object.is_a?(Hash) && context_name == :default
     if object.respond_to? :collect
       object.collect { |o| generate_single(o.class, context_name, o) }
     else

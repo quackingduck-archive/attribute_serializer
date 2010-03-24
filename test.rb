@@ -45,6 +45,7 @@ end
 
 context "Formatable subclass object, default formator" do
   setup do
+    # define AttributeSerializer for *ancestor class*
     AttributeSerializer BlogPost, %w(id title body)
 
     @post = PhotoBlogPost.create(
@@ -139,4 +140,10 @@ context "A non-default formatter" do
   equals(
     OHash { |h| h['id'] = 1; h['title'] = "Contextual Attributes" }
   )
+end
+
+context "Hashes are passed straight through" do
+  setup { AttributeSerializer({ :foo => 'bar' }) }
+  
+  asserts_topic.equals({:foo => 'bar'})
 end
