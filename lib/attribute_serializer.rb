@@ -12,7 +12,7 @@ module AttributeSerializer
       @attribs = attribs
       @delegate_class = DelegateClass(klass)
       @delegate_class.class_eval do
-        def delegatee; __getobj__ end        
+        def delegatee; __getobj__ end
         def id; formatee.id end # DelegateClass was written before object_id became the new world order
         alias_method :formatee, :delegatee # this was a stupid name
       end
@@ -64,9 +64,11 @@ module AttributeSerializer
 
 end
 
-# The interface
+# Public: Define a serializer or serialize an object or collection
 #
-# A default formatter:
+# Examples
+#
+# Define a default serializer on your class:
 #
 #   AttributeSerializer BlogPost, %w(id created_at title body) do
 #     def body
@@ -74,18 +76,22 @@ end
 #     end
 #   end
 #
-# Then call with:
+# Then serialize and instance like:
 #
 #   AttributeSerializer @post
 #
-# You can also define other formatters
+# You can also define other serializers:
 #
 #   AttributeSerializer BlogPost, :summary, %w(id created_at title)
 #
-# And you AttributeSerializer can produce formatted collections:
+# And serialize collections:
 #
 #   AttributeSerializer @posts, :summary
 #
+# AttributeSerializer returns an OrderedHash as the serialization, it's up to
+# you to call #to_json or #to_yaml on that object
+#
+# Returns an OrderedHash serialization when given an object or collection
 def AttributeSerializer(*args, &blk)
   if args.first.is_a?(Class)
     klass, context_name, attribs = (args.size == 3) ? args : [args[0], :default, args[1]]
