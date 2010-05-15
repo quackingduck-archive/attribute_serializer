@@ -1,5 +1,5 @@
 task :default => [:test]
- 
+
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gs|
@@ -8,14 +8,14 @@ begin
     gs.summary  = "Takes an object, serializes the attributes to an ordered hash based on a pre-defined schema"
     gs.email    = "myles@myles.id.au"
     gs.authors  = ["Myles Byrne"]
-    gs.add_development_dependency('riot', '>= 0.10.13')
+    gs.add_development_dependency('exemplor', '>= 3000.1.0')
     gs.files.include %(lib/attribute_serializer.rb) # jewler used to include files in lib automatically, what happened?
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
   puts "Install jeweler to build gem"
 end
- 
+
 task :test do
-  ruby '-rubygems', "test.rb"
+  ruby '-rubygems', "examples.rb"
 end
