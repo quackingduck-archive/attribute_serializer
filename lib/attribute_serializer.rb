@@ -49,6 +49,7 @@ module AttributeSerializer
   end
 
   def generate_single(klass, context_name, object)
+    return object if klass == String
     context = context_for(klass, context_name)
     raise ArgumentError, "no contextual attributes setup for #{klass}:#{context_name}" unless context
     context.generate(object)

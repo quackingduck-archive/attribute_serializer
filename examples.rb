@@ -147,3 +147,7 @@ end
 eg "Hashes are passed straight through" do
   Assert(AttributeSerializer({ :foo => 'bar' }) == { :foo => 'bar' })
 end
+
+eg "Arrays of strings are passed straight through" do
+  Assert(AttributeSerializer(['a','b']) == ['a','b'])
+end
