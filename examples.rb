@@ -151,3 +151,36 @@ end
 eg "Arrays of strings are passed straight through" do
   Assert(AttributeSerializer(['a','b']) == ['a','b'])
 end
+
+eg "Hash with objects as values" do
+  AttributeSerializer article_class, %w(id title body)
+  AttributeSerializer author_class, %w(name email)
+
+  author = author_class.create(
+    :name => 'Sting',
+    :email => 'sting@thepolice.co.uk'
+  )
+  article = article_class.create(
+    :id    => 1,
+    :title => 'Hash of objects',
+    :body  => 'AttributeSerializer <3 hash'
+  )
+
+  article_hash = {}.merge(OHash do |h|
+    h['id']    = article.id
+    h['title'] = article.title
+    h['body']  = article.body
+  end)
+
+  author_hash = {}.merge(OHash do |h|
+    h['name']  = author.name
+    h['email'] = author.email
+  end)
+
+  expected_hash = OHash do |h|
+    h['author'] = author_hash
+    h['article'] = article_hash
+  end
+
+  Assert(AttributeSerializer({:article => article, :author => author}) == expected_hash)
+end

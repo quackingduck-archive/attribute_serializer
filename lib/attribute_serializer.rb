@@ -40,8 +40,18 @@ module AttributeSerializer
   end
 
   def generate(context_name, object)
-    return object if object.is_a?(Hash) && context_name == :default
-    if object.respond_to? :collect
+    hash_is_serializable = false
+    if object.is_a?(Hash)
+      hash_is_serializable = object.values.map {|o| context_for?(o.class, context_name)}.all?
+      return object if context_name == :default && !hash_is_serializable
+    end
+
+    if hash_is_serializable
+      object.inject(ActiveSupport::OrderedHash.new) do |hash, (key,obj)|
+        hash[key.to_s] = generate_single(obj.class, context_name, obj)
+        hash
+      end
+    elsif object.respond_to? :collect
       object.collect { |o| generate_single(o.class, context_name, o) }
     else
       generate_single(object.class, context_name, object)
@@ -61,6 +71,10 @@ module AttributeSerializer
     end.min_by { |c, _| klass.ancestors.index(c) }
 
     contexts[closest_context_match]
+  end
+
+  def context_for?(klass, context_name=:default)
+    !!AttributeSerializer.context_for(klass, context_name)
   end
 
 end
