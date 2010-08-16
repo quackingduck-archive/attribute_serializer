@@ -9,6 +9,7 @@ begin
     gs.email    = "myles@myles.id.au"
     gs.authors  = ["Myles Byrne"]
     gs.add_development_dependency('exemplor', '>= 3000.1.0')
+    gs.add_dependency('activesupport')
     gs.files.include %(lib/attribute_serializer.rb) # jewler used to include files in lib automatically, what happened?
   end
   Jeweler::GemcutterTasks.new
